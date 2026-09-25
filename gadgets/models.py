@@ -8,6 +8,7 @@ class MovieGadget(models.Model):
     actor = models.CharField(max_length=150)
     character = models.CharField(max_length=150)
     available = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='gadgets/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

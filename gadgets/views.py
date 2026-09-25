@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from gadgets.models import MovieGadget
 from gadgets.serializers import MovieGadgetSerializer
 
+import json
 
 @api_view(['GET', 'POST'])
 def gadget_list(request):
@@ -15,19 +16,27 @@ def gadget_list(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = MovieGadgetSerializer(data=request.data)
+        data = json.loads(request.data['data'])
+        data['image'] = request.FILES.get('image')
+
+        serializer = MovieGadgetSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-def gadget_detail(request, gadget_id):
-    gadget = get_object_or_404(MovieGadget, pk=gadget_id)
+def gadget_detail(request, pk):
+    gadget = get_object_or_404(MovieGadget, pk=pk)
 
     if request.method == 'GET':
         serializer = MovieGadgetSerializer(gadget)
